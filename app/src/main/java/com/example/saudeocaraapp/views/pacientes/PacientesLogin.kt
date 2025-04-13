@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,9 +33,13 @@ import com.example.saudeocaraapp.database.PacienteDAO
 
 import com.example.saudeocaraapp.service.ApiService
 import com.example.saudeocaraapp.ui.theme.BackgroundColor
+import com.example.saudeocaraapp.viewmodel.PacienteViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
@@ -52,7 +58,9 @@ fun PacienteLogin(
 
     val context = LocalContext.current
 
+    val pacienteViewModel = koinViewModel<PacienteViewModel>()
 
+    val loading by pacienteViewModel.isLoading.collectAsState()
 
     ScaffoldCustom(
         "Login Paciente",
@@ -97,26 +105,13 @@ fun PacienteLogin(
                 cartaoSus = it
             })
             ButtonComponent(
+                isLoading = loading,
                 onClick = {
-                    coroutineScope.launch {
-                        try {
-                            val response = apiService.login(cartaoSus)
-                            Log.d("API", "Login sucesso: $response")
-                            pacienteDAO.inserir(response)
-                              navController .navigate("paciente_home") {
-                                    popUpTo("paciente_login") {
-                                        inclusive = true
-                                    }
-                                    launchSingleTop = true
-                                }
+                    pacienteViewModel.login(cartaoSus)
+                    navController.navigate("paciente_home")
 
-                        } catch (e: Exception) {
-                            Log.e("API", "Erro no login", e)
-                        }
 
-                    }
-
-                }, titulo = "Logar", largura = 390.dp,
+                }, titulo = "Logar", largura = 300.dp,
                 )
 
         }

@@ -14,11 +14,14 @@ interface PacienteDAO {
     suspend fun inserir(paciente: LoginUsuario)
 
     @Query("SELECT * FROM paciente LIMIT 1")
-    suspend fun getPaciente(): LoginUsuario?
+    suspend fun getPaciente(): LoginUsuario
 
 //    @Delete
 //    suspend fun deletar(tarefa: LoginUsuario)
 //
     @Query("DELETE FROM paciente WHERE id = :id")
     suspend fun deletarPorId(id: Int)
+
+    @Query("DELETE FROM paciente")
+    suspend fun deletarDadosBanco()
 }

@@ -8,7 +8,7 @@ object RetrofitInstance {
 
     fun getInstance(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("**")
+            .baseUrl("https://agentesaudeocara-1.onrender.com")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

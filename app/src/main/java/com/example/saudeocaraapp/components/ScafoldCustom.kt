@@ -24,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,9 +32,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.saudeocaraapp.R
+import com.example.saudeocaraapp.database.PacienteDAO
+import com.example.saudeocaraapp.service.ApiService
 import com.example.saudeocaraapp.ui.theme.CorAzulForte
 import com.example.saudeocaraapp.ui.theme.PurpleGrey80
+import com.example.saudeocaraapp.viewmodel.PacienteViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
@@ -41,18 +48,24 @@ fun ScaffoldCustom(
     tituloAppBar: String,
     navController: NavHostController,
     isBackButon: Boolean = false,
+    apiService: ApiService? = null,
     isMenu: Boolean = false,
     content: @Composable () -> Unit
+
+
 ) {
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
 
+
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             DrawerContent(
+
                 onNavigate = { route ->
                     navController.navigate(route)
                     scope.launch { drawerState.close() }
@@ -88,7 +101,13 @@ fun ScaffoldCustom(
 }
 
 @Composable
-fun DrawerContent(onNavigate: (String) -> Unit) {
+fun DrawerContent(
+
+    onNavigate: (String) -> Unit
+)
+    {
+
+        val pacienteViewModel = koinViewModel<PacienteViewModel>()
 
 
 
@@ -121,12 +140,13 @@ fun DrawerContent(onNavigate: (String) -> Unit) {
 
             ) {
                 Row(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().clickable {
+                        onNavigate("vagas_paciente")
+                    },
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextComponent(text = "Vagas")
-
 
                 }
             }
@@ -168,7 +188,13 @@ fun DrawerContent(onNavigate: (String) -> Unit) {
 
             ) {
                 Row(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().clickable {
+                        pacienteViewModel.deletarPaciente()
+                            onNavigate("initial")
+
+
+
+                    },
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {

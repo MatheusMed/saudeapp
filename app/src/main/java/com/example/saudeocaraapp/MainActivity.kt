@@ -1,18 +1,21 @@
 package com.example.saudeocaraapp
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
@@ -34,23 +37,27 @@ import com.example.saudeocaraapp.ui.theme.BackgroundColor
 import com.example.saudeocaraapp.ui.theme.ColorBranco
 import com.example.saudeocaraapp.ui.theme.CorAzulForte
 import com.example.saudeocaraapp.ui.theme.SaudeocaraappTheme
+import com.example.saudeocaraapp.viewmodel.PacienteViewModel
 import com.example.saudeocaraapp.views.HomeView
+import com.example.saudeocaraapp.views.pacientes.ConsultaView
 import com.example.saudeocaraapp.views.pacientes.PacienteHome
 import com.example.saudeocaraapp.views.pacientes.PacienteLogin
+import org.koin.android.ext.android.getKoin
+import org.koin.android.ext.android.inject
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.context.GlobalContext.get
+import org.koin.java.KoinJavaComponent.inject
 
 class MainActivity : ComponentActivity() {
 
-    private val apiService: ApiService by lazy { RetrofitInstance.getApiService() }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val splashScreen = installSplashScreen()
-        val db = Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java,
-            "paciente"
-        ).build()
+
 
         setContent {
             SaudeocaraappTheme(
@@ -65,10 +72,12 @@ class MainActivity : ComponentActivity() {
                 insetsController.isAppearanceLightNavigationBars = false
 
                 WindowCompat.setDecorFitsSystemWindows(window, false)
+                 val apiService: ApiService by inject()
+                 val pacienteDAO: PacienteDAO by inject()
                 Scaffold(modifier = Modifier.fillMaxSize()) {
                     NavigationRotasApp(
                         apiService,
-                        db.PacienteDAO()
+                        pacienteDAO
                     )
                 }
             }
@@ -76,19 +85,30 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NavigationRotasApp(apiService: ApiService, pacienteDAO: PacienteDAO) {
+fun NavigationRotasApp(
+    apiService: ApiService,
+    pacienteDAO: PacienteDAO
+) {
     val navController = rememberNavController()
 
-    val pacienteState = produceState<Pair<Boolean, LoginUsuario?>>(initialValue = true to null) {
-        val paciente = pacienteDAO.getPaciente()
-        value = false to paciente
+    val pacienteViewModel = koinViewModel<PacienteViewModel>()
+
+    LaunchedEffect(Unit){
+        pacienteViewModel.trazerPaciente()
     }
-    val (isLoading, paciente) = pacienteState.value
-    if (isLoading) {
+
+    val paciente by pacienteViewModel.paciente.collectAsState()
+
+    val loading by pacienteViewModel.isLoading.collectAsState()
+
+    if (loading) {
 
         Column(
-            modifier = Modifier.fillMaxSize().background(CorAzulForte),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(CorAzulForte),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
 
@@ -117,21 +137,42 @@ fun NavigationRotasApp(apiService: ApiService, pacienteDAO: PacienteDAO) {
                 composable("paciente_home") {
                     PacienteHome(
                         navController,
-                        apiService,
-                        pacienteDAO
+
                     )
                 }
             }
 
         } else {
             NavHost(navController = navController, startDestination = "paciente_home") {
+                composable("initial") {
+                    HomeView(
+                        navController
+                    )
+                }
                 composable("paciente_home") {
                     PacienteHome(
+                        navController,
+
+                    )
+
+                }
+                composable("vagas_paciente") {
+                    ConsultaView(
+                        navController,
+                        apiService,
+                        pacienteDAO
+                    )
+
+                }
+                composable("paciente_login") {
+                    PacienteLogin(
                         navController,
                         apiService,
                         pacienteDAO
                     )
                 }
+
+
             }
 
         }

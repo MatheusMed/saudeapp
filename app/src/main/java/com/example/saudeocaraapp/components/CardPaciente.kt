@@ -60,7 +60,7 @@ fun CardPaciente(
             Row(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
+
             ) {
                 TextComponent(text = "Nome: ")
                 if (nome != null) {
@@ -70,7 +70,7 @@ fun CardPaciente(
             Row(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
+
             ) {
                 TextComponent(text = "Agente: ")
                 if (atendente != null) {
@@ -80,7 +80,7 @@ fun CardPaciente(
             Row(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
+
             ) {
                 TextComponent(text = "Genero: ")
                 TextComponent(text = sexoConvert)
@@ -88,7 +88,7 @@ fun CardPaciente(
             Row(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
+
             ) {
                 TextComponent(text = "Cartao SUS: ")
                 if (sus != null) {
@@ -98,7 +98,7 @@ fun CardPaciente(
             Row(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
+
             ) {
                 TextComponent(text = "Localidade: ")
                 if (localidade != null) {
@@ -108,7 +108,7 @@ fun CardPaciente(
             Row(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
+
             ) {
                 TextComponent(text = "Posto: ")
                 if (posto != null) {

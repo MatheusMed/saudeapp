@@ -2,9 +2,11 @@ package com.example.saudeocaraapp.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -21,11 +23,14 @@ fun ButtonComponent(
     onClick: () -> Unit,
     titulo:String,
     largura: Dp? = null,
-    altura: Dp? = null
+    altura: Dp? = null,
+    isLoading: Boolean = false
 ){
 
     ElevatedButton(
-        modifier = Modifier.height( altura ?: 50.dp).width(largura ?: 150.dp),
+        modifier = Modifier
+            .height(altura ?: 50.dp)
+            .width(largura ?: 150.dp),
         shape = RoundedCornerShape(10.dp ),
         colors = ButtonColors(
             containerColor = ColorOffWhite,
@@ -34,10 +39,16 @@ fun ButtonComponent(
             disabledContainerColor = ColorOffWhite,
         ),
         onClick = onClick) {
-        Text(
-            color = CorAzulForte,
-            text = titulo,
+        if (isLoading) {
+            CircularProgressIndicator(
+                color = CorAzulForte
+            )
+        } else {
+            Text(
+                color = CorAzulForte,
+                text = titulo,
             )
 
+        }
     }
 }

@@ -3,7 +3,7 @@
 
     <style name="Theme.Saudeocaraapp" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowSplashScreenBackground">#061032</item>
-<!--        <item name="android:windowSplashScreenAnimatedIcon">@drawable/logo2</item>-->
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/logo</item>
         <item name="android:windowSplashScreenAnimationDuration">3000</item>
     </style>
 </resources>
